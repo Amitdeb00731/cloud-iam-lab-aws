@@ -27,3 +27,13 @@ output "trail_arn" {
   description = "The CloudTrail trail ARN."
   value       = aws_cloudtrail.main.arn
 }
+
+output "guardduty_detector_id" {
+  description = "The GuardDuty detector ID."
+  value       = aws_guardduty_detector.main.id
+}
+
+output "alerts_topic_arn" {
+  description = "The security alerts SNS topic ARN."
+  value       = aws_sns_topic.alerts.arn
+}

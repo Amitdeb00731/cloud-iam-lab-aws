@@ -43,7 +43,7 @@ flowchart LR
     ROOT["Root user<br/>break-glass, MFA only"]
     SCP["SCPs + IAM conditions<br/>MFA, UK-only, one Region"]
   end
-  subgraph ACCT["AWS account (eu-west-2)"]
+  subgraph ACCT["AWS account (eu-north-1)"]
     S3["S3 bucket<br/>VPC endpoint, SSE-KMS"]
     KMS["KMS<br/>customer-managed key"]
     CT["CloudTrail + Athena<br/>GuardDuty + EventBridge"]
@@ -66,7 +66,7 @@ Phase results are published here as each phase completes.
 | --- | --- | --- |
 | 1 | Identity and access model (IAM roles, JIT, SCP) | Complete |
 | 2 | Data protection (locked S3, KMS CMK, VPC endpoint) | Complete |
-| 3 | Visibility (CloudTrail, Athena, GuardDuty) | Planned |
+| 3 | Visibility (CloudTrail, Athena, GuardDuty) | Complete |
 | 4 | Simulate and detect (five techniques, Athena + Sigma) | Planned |
 | 5 | Posture and access review (Security Hub before/after) | Planned |
 | 6 | Report (incident report, IAM model, business summary) | Planned |
@@ -90,7 +90,8 @@ cloud-iam-lab-aws/
 ## Scope and safety
 
 Everything runs in an AWS account I own, using test identities and synthetic data
-only, in the London Region (`eu-west-2`). The detection validation runs harmless
+only, in a single European Region (`eu-north-1`, the Region left open by the
+account's region-restriction guardrail). The detection validation runs harmless
 actions against my own test identities to confirm each detection fires. No real
 credentials, personal data, or production systems are involved. Cost is held with
 a USD 10 budget, one Region, no EC2, and the paid services (GuardDuty, Security

@@ -20,7 +20,6 @@ provider "aws" {
   default_tags {
     tags = {
       project = "cloud-iam-lab"
-      phase   = "2-data-protection"
     }
   }
 }

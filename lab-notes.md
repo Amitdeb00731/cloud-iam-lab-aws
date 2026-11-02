@@ -102,3 +102,46 @@ rely on it; `aws:PrincipalArn` is the role, not the session. A restrictive
 resource policy also applies to the identity that deploys it, so the deployment
 role has to be a principal the policy admits, which is why applies now run as the
 just-in-time admin role.
+
+### 2026-11-02: Phase 3 complete, visibility over the account
+
+CloudTrail now records every management event across all Regions and object-level
+access on the data bucket, delivering to a hardened log bucket that is queryable
+with Athena. GuardDuty is enabled and its findings reach an inbox through
+EventBridge and SNS. All three sources were proven end to end from the laptop;
+the coverage table and evidence are in `evidence/phase3/`.
+
+### 2026-11-02: an Athena query that would not parse the trail
+
+**What happened:** the first Athena query against the CloudTrail table failed with
+`HIVE_BAD_DATA: Current entry must be closed before a null can be written`, so no
+events were readable at all.
+
+**What fixed it:** the table definition declared
+`userIdentity.sessionContext.webIdFederationData` as a `STRING`, but in the actual
+log records that field is a JSON object, not a string, which the SerDe could not
+coerce. Dropping `webIdFederationData` (and the unused `ec2RoleDelivery`) from the
+struct in the DDL, then recreating the table, let every record parse. The
+CloudTrail SerDe ignores fields the table does not declare, so leaving them out is
+safe.
+
+**What it taught:** a schema over semi-structured logs has to match the real
+shape of the data, not the documented superset of fields. When a column is a
+nested object, declaring it as a scalar breaks the whole row. Declare only the
+fields a detection needs and let the SerDe skip the rest.
+
+### 2026-11-02: the first GuardDuty alert that never arrived
+
+**What happened:** the EventBridge rule, SNS topic and email subscription were in
+place, yet a sample GuardDuty finding produced no alert email.
+
+**What fixed it:** the first sample finding was generated before the SNS email
+subscription had been confirmed, and SNS does not resend a notification for an
+event that fired while the subscription was still pending. After confirming the
+subscription, a fresh sample finding of a different type routed through
+EventBridge to SNS and the alert arrived.
+
+**What it taught:** an alerting path is only proven once the subscription is
+confirmed and a message sent after that point is received. The order matters, and
+it belongs in the on-call runbook: confirm the subscription first, then fire the
+test, or the test will look like a failure of the whole path.
