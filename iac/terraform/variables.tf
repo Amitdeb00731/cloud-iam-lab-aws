@@ -46,3 +46,17 @@ variable "enforce_vpce" {
   type        = bool
   default     = false
 }
+
+# Phase 3 visibility. A dedicated log bucket keeps audit logs isolated from the
+# data bucket, and the trail name is referenced by the log bucket policy.
+variable "log_bucket_name" {
+  description = "Globally unique name for the CloudTrail log bucket."
+  type        = string
+  default     = "cloud-iam-lab-logs-963910216975"
+}
+
+variable "trail_name" {
+  description = "Name of the CloudTrail trail."
+  type        = string
+  default     = "cloud-iam-lab-trail"
+}

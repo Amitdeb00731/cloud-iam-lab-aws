@@ -10,13 +10,19 @@ with EventBridge, and let GuardDuty add managed threat detections on top.
 
 ## 3.1 CloudTrail as the audit path
 
-1. Create one organisation or account trail that logs management events to a
-   dedicated, locked-down S3 bucket in `eu-west-2` (Block Public Access on,
-   SSE-KMS, access confined). One management-events trail is free.
-2. Add a data-event selector for the Phase 2 bucket so object-level reads and
-   writes are logged. S3 data events are paid, so scope the selector to just that
-   bucket and keep the volume tiny.
-3. Enable CloudTrail log-file validation so tampering is detectable.
+As-built: the trail and its log bucket are Terraform, in `eu-north-1`, alongside
+the Phase 2 code (`iac/terraform/cloudtrail.tf`). The trail is applied as
+`AdminJITRole`, like every apply since the confidential control went in.
+
+1. A multi-region account trail logs management events (free) to a dedicated,
+   locked-down log bucket (`cloud-iam-lab-logs-...`) kept separate from the data
+   bucket, with Block Public Access on, ACLs disabled, versioning on, SSE-S3 at
+   rest and a non-TLS deny. The bucket policy grants only the CloudTrail service
+   principal, pinned to this trail's ARN.
+2. A single data-event selector scoped to the Phase 2 data bucket logs object
+   reads and writes. S3 data events are paid, so the selector covers that one
+   bucket only and the volume stays tiny.
+3. Log-file validation is on so tampering is detectable.
 
 ## 3.2 Make the logs queryable
 
@@ -46,10 +52,11 @@ SNS topic (email) so a detection surfaces without polling.
 ## 3.4 The cost trap: AWS Config
 
 AWS Config is required by Security Hub (Phase 5) and bills per configuration item
-recorded and per rule evaluation. Keep it cheap: record only the resource types
-the lab uses (S3, IAM, KMS, CloudTrail), not all resources, and enable it only for
-the Phase 3 to Phase 5 window. Note the setting in `lab-notes.md` and turn it off
-at teardown.
+recorded and per rule evaluation. To keep cost down it is deliberately left off in
+Phase 3 and enabled only at the start of Phase 5, when Security Hub actually needs
+it, recording only the resource types the lab uses (S3, IAM, KMS, CloudTrail), not
+all resources. The setting is noted in `lab-notes.md` and turned off at teardown.
+Phase 3 visibility stands on CloudTrail, Athena and GuardDuty without it.
 
 ## 3.5 Connect the data sources and confirm arrival
 
@@ -58,8 +65,8 @@ queryable.
 
 | Source | Where it lands | Confirm with |
 | --- | --- | --- |
-| Sign-in / console use | CloudTrail management events | Sign in as `finance1`, query `ConsoleLogin` in Athena |
-| IAM and role changes | CloudTrail management events | Make a role change, query the event |
+| Sign-in / console use | CloudTrail management events | Sign in as `operator`, query `ConsoleLogin` in Athena |
+| Role elevation | CloudTrail management events | Assume a lab role, query `AssumeRole` in Athena |
 | S3 object access | CloudTrail data events | Read the test object, query `GetObject` on the bucket |
 | Managed detections | GuardDuty findings | Confirmed when a finding fires (Phase 4) |
 

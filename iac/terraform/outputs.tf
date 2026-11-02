@@ -17,3 +17,13 @@ output "s3_vpc_endpoint_id" {
   description = "The S3 gateway VPC endpoint ID (used by the enforce_vpce guardrail)."
   value       = aws_vpc_endpoint.s3.id
 }
+
+output "log_bucket_name" {
+  description = "The CloudTrail log bucket name."
+  value       = aws_s3_bucket.logs.id
+}
+
+output "trail_arn" {
+  description = "The CloudTrail trail ARN."
+  value       = aws_cloudtrail.main.arn
+}
