@@ -67,7 +67,7 @@ Phase results are published here as each phase completes.
 | 1 | Identity and access model (IAM roles, JIT, SCP) | Complete |
 | 2 | Data protection (locked S3, KMS CMK, VPC endpoint) | Complete |
 | 3 | Visibility (CloudTrail, Athena, GuardDuty) | Complete |
-| 4 | Simulate and detect (five techniques, Athena + Sigma) | Planned |
+| 4 | Simulate and detect (five techniques, Athena + Sigma) | Complete |
 | 5 | Posture and access review (Security Hub before/after) | Planned |
 | 6 | Report (incident report, IAM model, business summary) | Planned |
 

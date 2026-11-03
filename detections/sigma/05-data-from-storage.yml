@@ -1,0 +1,38 @@
+title: AWS S3 confidential data exposure or read
+id: 2f775070-4851-4531-9279-c3914a9b966e
+status: experimental
+description: >
+  Detects the footprint of data theft from S3: a change to a bucket's exposure
+  (bucket policy, public access block or ACL) or a read of a confidential-tier
+  object. Correlating an exposure change with a confidential read in a short
+  window is the high-confidence signal.
+references:
+  - https://attack.mitre.org/techniques/T1530/
+author: Amit Kiran Deb
+date: 2026/11/03
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  exposure_change:
+    eventName:
+      - PutBucketPolicy
+      - DeleteBucketPolicy
+      - PutBucketPublicAccessBlock
+      - PutBucketAcl
+    requestParameters.bucketName: cloud-iam-lab-data-963910216975
+  confidential_read:
+    eventName: GetObject
+    requestParameters.key|startswith: 'confidential/'
+  condition: 1 of selection*
+fields:
+  - userIdentity.arn
+  - sourceIPAddress
+  - requestParameters.bucketName
+  - requestParameters.key
+falsepositives:
+  - AdminJITRole legitimately reading the confidential prefix, or a sanctioned change to the bucket policy; allowlist the known principal.
+level: high
+tags:
+  - attack.collection
+  - attack.t1530

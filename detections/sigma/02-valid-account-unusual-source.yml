@@ -1,0 +1,33 @@
+title: AWS console sign-in without MFA
+id: af4bb80d-76f3-44b9-9f62-0184ca301257
+status: experimental
+description: >
+  Detects a successful AWS console sign-in where MFA was not used. In an account
+  that enforces MFA this should never happen, so a success without it points to a
+  credential used in an unexpected way. The companion signal, a sign-in from a
+  source not seen before for the principal, needs baseline state and is handled in
+  the platform (Athena) and by GuardDuty's managed anomaly and IP-reputation
+  findings.
+references:
+  - https://attack.mitre.org/techniques/T1078/004/
+author: Amit Kiran Deb
+date: 2026/11/03
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventName: ConsoleLogin
+    responseElements.ConsoleLogin: Success
+    additionalEventData.MFAUsed: 'No'
+  condition: selection
+fields:
+  - userIdentity.userName
+  - sourceIPAddress
+  - awsRegion
+falsepositives:
+  - Account root or a federated principal where MFA state is reported differently; scope to IAM users.
+level: high
+tags:
+  - attack.initial-access
+  - attack.t1078.004

@@ -1,0 +1,42 @@
+title: AWS privileged policy attached directly to a principal
+id: c90de09b-0380-416d-8022-ba884a5bb457
+status: experimental
+description: >
+  Detects an administrative managed policy (AdministratorAccess, IAMFullAccess or
+  PowerUserAccess) attached directly to an IAM user, role or group, or any inline
+  policy put. This creates standing privilege outside a just-in-time elevation
+  path and is a common cloud privilege-escalation step.
+references:
+  - https://attack.mitre.org/techniques/T1098/003/
+author: Amit Kiran Deb
+date: 2026/11/03
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  attach_privileged:
+    eventName:
+      - AttachUserPolicy
+      - AttachRolePolicy
+      - AttachGroupPolicy
+    requestParameters.policyArn:
+      - 'arn:aws:iam::aws:policy/AdministratorAccess'
+      - 'arn:aws:iam::aws:policy/IAMFullAccess'
+      - 'arn:aws:iam::aws:policy/PowerUserAccess'
+  put_inline:
+    eventName:
+      - PutUserPolicy
+      - PutRolePolicy
+      - PutGroupPolicy
+  condition: attach_privileged or put_inline
+fields:
+  - userIdentity.arn
+  - requestParameters.userName
+  - requestParameters.roleName
+  - requestParameters.policyArn
+falsepositives:
+  - A sanctioned provisioning or infrastructure-as-code role that legitimately attaches policies; allowlist that principal.
+level: high
+tags:
+  - attack.privilege-escalation
+  - attack.t1098.003
