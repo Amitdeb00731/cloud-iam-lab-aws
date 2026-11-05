@@ -14,6 +14,11 @@ stage, to show the same controls across two clouds.
 | 5 | [Posture and access review](05-posture.md) | Security Hub before/after, access review |
 | 6 | [Report](06-report.md) | Incident report, IAM model, business summary |
 
+For a high-level visual overview across all phases, see
+[architecture-diagrams.md](architecture-diagrams.md): system and account topology,
+the identity and just-in-time flow, data protection, visibility, detection,
+posture, and trust boundaries.
+
 Everything runs in an AWS account dedicated to this lab, with test identities
 only, in `eu-north-1` (the workload Region the account's AWS-managed region policy
 leaves open). No real credentials or production

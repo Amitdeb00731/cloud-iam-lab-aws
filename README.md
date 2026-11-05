@@ -56,8 +56,10 @@ flowchart LR
   SH["Security Hub<br/>security score"] --> ACCT
 ```
 
-See the full environment diagram and rationale in the
-[Build 2 on AWS plan](docs/README.md).
+A full set of system, flow, data-protection, visibility, detection, posture and
+trust-boundary diagrams is in
+[docs/architecture-diagrams.md](docs/architecture-diagrams.md). The plan and
+rationale are in the [Build 2 on AWS guides](docs/README.md).
 
 ## Results
 
