@@ -16,3 +16,13 @@ review. Full write-up in [docs/05-posture.md](../../docs/05-posture.md).
 - [`access-review.md`](access-review.md): every identity and access path reviewed
   with a recorded decision.
 - `raw/`: the full FSBP control export, git-ignored.
+
+## Screenshots
+
+![The Security Hub FSBP controls, passed and failed](securityhub-fsbp-controls.png)
+![IAM Access Analyzer: the two expected organisation-management findings](access-analyzer-findings.png)
+![The AWS Config recorder on](config-recorder.png)
+
+The before-remediation score is in `securityhub-score-before.png`; the after score
+(`securityhub-score-after.png`) follows once Security Hub completes its periodic
+re-evaluation.

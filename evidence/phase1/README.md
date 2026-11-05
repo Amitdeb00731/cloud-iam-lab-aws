@@ -29,3 +29,30 @@ Capturing the CloudTrail evidence:
 **Privacy:** CloudTrail exports include a **Source IP address** column holding
 your real IP. Before committing anything to a public repo, crop or redact the IP
 column. Prefer a screenshot of the key rows over the raw CSV.
+
+## Screenshots
+
+Account email addresses and the operator access key ID are redacted in the images
+below; account IDs and ARNs are left visible as they are not secret.
+
+### Organisation and governance
+
+![AWS Organizations: Root, the Workloads OU and the three accounts](org-structure.png)
+![Centralized root access: member-account root actions are brokered from the management account](centralized-root-access.png)
+![Service control policies applied to the Workloads OU, with the AWS baseline policies at Root](scp-attached.png)
+![The require-mfa-sensitive SCP document](scp-require-mfa.png)
+
+### Identity and roles
+
+![The three lab roles in the Roles list](roles-list.png)
+![The lab roles, continued](roles-list-2.png)
+![AdminJITRole capped at a one hour maximum session](adminjit-session-1h.png)
+![AdminJITRole trust policy requires aws:MultiFactorAuthPresent](role-trust-mfa.png)
+![operator has one inline policy and no managed policies](operator-permissions.png)
+![operator has an MFA device assigned](operator-mfa.png)
+
+### The access model in action
+
+![operator has no standing access: denied across services](operator-denied.png)
+![After assuming ReadOnlyRole, a write (CreateBucket) is denied](readonly-after-switch.png)
+![CloudTrail records the operator AssumeRole](cloudtrail-assumerole.png)

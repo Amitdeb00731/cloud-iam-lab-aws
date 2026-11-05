@@ -149,3 +149,15 @@ in `../../lab-notes.md`.
 Account IDs and the KMS key ARN appear throughout the Terraform and are not
 secret. Before committing any raw capture, remove request IDs, host IDs and any
 source IP. Raw captures, if kept, go under a git-ignored `raw/` subfolder.
+
+## Screenshots
+
+![Account-level S3 Block Public Access turned on](public-access-block.png)
+![Default encryption is SSE-KMS on the customer-managed key, with SSE-C blocked](encryption-kms.png)
+![The bucket policy: DenyInsecureTransport and the confidential-prefix restriction](bucket-policy.png)
+![The KMS customer-managed key with automatic rotation enabled](kms-key-rotation.png)
+![The VPC route table: an S3 gateway endpoint route and no internet gateway](vpce-and-no-igw.png)
+![AdminJITRole reads the confidential object](confidential-allowed.png)
+![ContributorRole is denied the same object with a 403](confidential-denied.png)
+![Anonymous and non-TLS reads are both denied](anonymous-and-tls-denied.png)
+![Off-path read denied by the aws:SourceVpce condition when the endpoint is enforced](vpce-offpath-denied.png)

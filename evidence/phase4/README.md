@@ -17,3 +17,13 @@ Start with the coverage matrix, then the per-technique records:
 
 Each record states the technique, the benign validation action, the Athena
 detection and its result, and an honest score of whether the detection fired.
+
+## Screenshots
+
+Athena detection results (home IP redacted where a source address appears):
+
+![T1110.003 password spraying: failed logins grouped by source](athena-t1-spray.png)
+![T1098.003 an administrative policy attached outside the just-in-time path](athena-t3-admin.png)
+![T1098.001 a new long-lived credential created](athena-t4-credential.png)
+![T1530 control plane: a change to the bucket exposure](athena-t5-data-control.png)
+![T1530 data plane: a read of a confidential object](athena-t5-data-read.png)
