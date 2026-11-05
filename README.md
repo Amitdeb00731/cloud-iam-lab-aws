@@ -1,6 +1,6 @@
 # Cloud IAM Lab (AWS): securing an account where identity is the perimeter
 
-> **Status: Phases 1 to 5 complete; Phase 6 (report) upcoming.** The AWS
+> **Status: all six phases complete.** The AWS
 > counterpart of the Azure Cloud IAM Lab, built stage for stage to show the same
 > controls across two clouds. The plan and the six phase guides are in
 > [docs/](docs/README.md); the results of each completed phase are below and in
@@ -108,7 +108,7 @@ service's periodic re-evaluation and is recorded in
 | 3 | Visibility (CloudTrail, Athena, GuardDuty) | Complete |
 | 4 | Simulate and detect (five techniques, Athena + Sigma) | Complete |
 | 5 | Posture and access review (Security Hub before/after) | Complete |
-| 6 | Report (incident report, IAM model, business summary) | Upcoming |
+| 6 | Report (incident report, IAM model, business summary) | Complete |
 
 ## Repository layout
 
