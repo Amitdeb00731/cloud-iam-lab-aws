@@ -1,4 +1,4 @@
-# Phase 2: Data protection (days 5 to 7)
+# Phase 2: Data protection
 
 **Goal:** deploy an S3 bucket that holds "customer" data and lock it so that only
 an IAM principal, over a private path, with a customer-managed key, can reach it.

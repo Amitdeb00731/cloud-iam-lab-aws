@@ -1,4 +1,4 @@
-# Phase 4: Simulate and detect (days 11 to 16)
+# Phase 4: Simulate and detect
 
 **Goal:** for five cloud techniques, generate a benign signal in your own lab
 account, write a detection that catches it, tune out the noise, and score it

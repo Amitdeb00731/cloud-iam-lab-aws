@@ -1,4 +1,4 @@
-# Phase 1: Identity and access model (days 1 to 4)
+# Phase 1: Identity and access model
 
 **Goal:** stand up an AWS account where identity is the control plane: no
 standing privilege, every administrative action elevated just in time, and every

@@ -1,4 +1,4 @@
-# Phase 5: Posture and access review (days 17 to 18)
+# Phase 5: Posture and access review
 
 **Goal:** measure the account's security posture before and after remediation, and
 run one access review, so the build shows the governance half of cloud security,

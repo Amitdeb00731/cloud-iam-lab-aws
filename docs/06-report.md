@@ -1,4 +1,4 @@
-# Phase 6: Report (days 19 to 21)
+# Phase 6: Report
 
 **Goal:** turn the build into the three artefacts a security and controls function
 produces: a technical incident report, an IAM control write-up for a risk reader,

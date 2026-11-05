@@ -1,4 +1,4 @@
-# Phase 3: Visibility (days 8 to 10)
+# Phase 3: Visibility
 
 **Goal:** get every security-relevant signal from the account into one queryable
 place and prove each source arrives before you try to detect anything. This
