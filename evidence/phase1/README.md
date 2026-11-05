@@ -14,8 +14,18 @@ a password or an MFA secret in any screenshot or export.
 | Read-only state | After assuming `ReadOnlyRole`, S3 readable, write denied | `readonly-after-switch.png` |
 | Admin state | After assuming `AdminJITRole`, admin available, 1 hour session banner | `adminjit-elevated.png` |
 | Audit trail | CloudTrail Event history filtered by user name `operator`, showing `AssumeRole` for both roles | `cloudtrail-assumerole.png` and optional `cloudtrail-assumerole.csv` |
-| SCP guardrail (Step 6) | A denied action outside `us-east-1`, or an IAM policy simulator result | `scp-region-deny.png` |
+| SCP guardrail (Step 6) | A denied action outside `eu-north-1`, or an IAM policy simulator result | `scp-region-deny.png` |
 
-Capture the CloudTrail rows by filtering on **User name = operator** (not Event
-name), since Event history also contains hundreds of unrelated AWS service-role
-assumptions. Event history can lag up to about 15 minutes after the action.
+Capturing the CloudTrail evidence:
+- Filter on **User name = operator** to see operator's own activity: the
+  first-login `ChangePassword`, the wall of `AccessDenied` before any role is
+  assumed, then successful read calls (`ListBuckets`, `GetRole`) once
+  `ReadOnlyRole` is active. That before-and-after is the proof the model works.
+- The explicit elevation is logged as **`SwitchRole`** (event source
+  `signin.amazonaws.com`), not `AssumeRole`; filter **Event name = SwitchRole**
+  in **eu-north-1** to capture that line.
+- Event history can lag up to about 15 minutes after the action.
+
+**Privacy:** CloudTrail exports include a **Source IP address** column holding
+your real IP. Before committing anything to a public repo, crop or redact the IP
+column. Prefer a screenshot of the key rows over the raw CSV.

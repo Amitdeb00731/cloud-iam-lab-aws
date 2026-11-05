@@ -40,7 +40,11 @@ CloudTrail. The instance available for this lab could not expose multi-account
 permission sets, so the model was delivered with IAM roles, which a reviewer
 reads as the same pattern.
 
-## Break-glass
+## Root user
 
-The account root user is the one intentional standing-privilege exception. It has
-MFA enabled and is otherwise unused, exactly as a break-glass account should be.
+The workload account root holds no credentials: no password, no access keys and no
+MFA. Under AWS Organizations with centralized root access enabled, any root action
+on the member account is brokered from the management account, whose own root is
+protected by MFA. This credential-less state is the AWS-recommended posture and is
+stronger than a local root with MFA. The review is in
+[../../evidence/phase5/access-review.md](../../evidence/phase5/access-review.md).

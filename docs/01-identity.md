@@ -17,7 +17,10 @@ No real personal data and no production system is involved.
 > [../config/iam/roles.md](../config/iam/roles.md). The control outcome (no
 > standing privilege, MFA-gated access, just-in-time admin, full audit trail) is
 > identical, and a production landing zone would front these roles with Identity
-> Center or an external IdP.
+> Center or an external IdP. The live Region is `eu-north-1`, not the `eu-west-2`
+> named in the design below: the account's AWS-managed region guardrail leaves only
+> `eu-north-1` open for workloads, so the UK framing is carried in the report, not
+> the Region.
 
 ## 1.1 Create the account and the organisation
 

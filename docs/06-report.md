@@ -26,11 +26,12 @@ persistence, and data read from the exposed S3 bucket. Include:
 `report/iam-model.md`, for a technology-risk reader. Map each control you built to
 the access-management expectations a bank's controls team checks:
 
-- Joiner-mover-leaver (provisioning through Identity Center, group changes, access
+- Joiner-mover-leaver (provisioning through the IAM role model, which a production
+  landing zone would front with Identity Center or an IdP, group changes, access
   review).
-- Privileged access management (just-in-time elevation, short sessions, root as
-  break-glass).
-- Least privilege and segregation of duties (permission-set scope, prefix-level
+- Privileged access management (just-in-time elevation, short sessions,
+  credential-less root under centralized root access).
+- Least privilege and segregation of duties (role scope, prefix-level
   data separation, SCP guardrails).
 - Monitoring and detection (CloudTrail, GuardDuty, the Athena detections and the
   coverage matrix).
@@ -51,7 +52,8 @@ service that depends on it, and which controls hold the impact inside tolerance.
 - Delete the CloudTrail trail and its log bucket if you are not reusing them.
 - Record the final cost from Cost Explorer or the Billing console in
   `lab-notes.md`.
-- Remove the lab's IAM Identity Center users if you are not reusing the account.
+- Remove the lab's `operator` IAM user and the three lab roles if you are not
+  reusing the account.
 
 ## Phase 6 deliverables
 

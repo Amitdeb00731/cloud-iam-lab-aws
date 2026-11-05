@@ -37,3 +37,18 @@ output "alerts_topic_arn" {
   description = "The security alerts SNS topic ARN."
   value       = aws_sns_topic.alerts.arn
 }
+
+output "config_bucket_name" {
+  description = "The AWS Config delivery bucket name."
+  value       = aws_s3_bucket.config.id
+}
+
+output "access_analyzer_arn" {
+  description = "The IAM Access Analyzer ARN."
+  value       = aws_accessanalyzer_analyzer.main.arn
+}
+
+output "cloudtrail_kms_key_arn" {
+  description = "The CMK used to encrypt CloudTrail log files (Phase 5, CloudTrail.2)."
+  value       = aws_kms_key.cloudtrail.arn
+}

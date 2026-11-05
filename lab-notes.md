@@ -1,11 +1,9 @@
-# Lab notes
+# Engineering log
 
-A running log of what broke and how it was fixed, kept from day one. These become
-the STAR stories for interviews.
-
-## Format
-
-Each entry: date, what happened, what fixed it, what it taught.
+A dated record of the engineering decisions and problems that shaped this build:
+what happened, what resolved it, and what it showed. The entries are the reasoning
+behind the as-built environment, kept so the design choices and the troubleshooting
+are legible to a reviewer.
 
 ## Entries
 
@@ -43,7 +41,8 @@ organisation Root: an `AdvancedModeRegionRestrictionSecurityControlPolicy` and a
 `sso:CreateInstance` when we tried to spin up a second Identity Center instance.
 
 **What fixed it:** nothing needed fixing; these are AWS baseline protections. The
-lab's own SCPs (`deny-outside-us-east-1`, `deny-disable-security`,
+lab's own SCPs (`deny-outside-us-east-1`, later renamed `deny-outside-eu-north-1`
+when the Region settled, see the entry below; `deny-disable-security`;
 `require-mfa-sensitive`) were attached at the Workloads OU, which layers
 account-scoped guardrails under the Root-level baseline. The important lesson for
 the deny model: a `FullAWSAccess` allow must stay attached alongside the deny
@@ -52,6 +51,25 @@ SCPs, because attaching any SCP switches the node to deny-by-default.
 **What it taught:** know which guardrails the platform already enforces before
 adding your own, and understand that SCPs are allow-list gates once present, not
 just a stack of denies.
+
+### 2026-11-01: the lab Region, planned London, settled on eu-north-1
+
+**What happened:** the plan was to run the lab in London (`eu-west-2`) for the UK
+framing, and Phase 1 was first stood up in `us-east-1`. Neither held. On the
+paid-plan upgrade AWS auto-attached an
+`AdvancedModeRegionRestrictionSecurityControlPolicy` at the organisation Root, and
+for workload actions it left only `eu-north-1` open.
+
+**What fixed it:** the lab was standardised on `eu-north-1`, the one workload
+Region the AWS baseline policy permits, and the Region-deny SCP was renamed from
+`deny-outside-us-east-1` to `deny-outside-eu-north-1` to match. The UK
+operational-resilience framing is carried in the report rather than forced onto
+the Region.
+
+**What it taught:** the platform's own guardrails can override an infrastructure
+choice, so confirm which Regions a managed policy admits before committing to one.
+A compliance narrative and the technical Region are separable: the narrative
+belongs in the report, the Region follows what the guardrails allow.
 
 ### 2026-11-01: Phase 2 complete, data protection on S3 with KMS
 

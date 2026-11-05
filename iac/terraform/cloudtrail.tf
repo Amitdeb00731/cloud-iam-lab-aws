@@ -31,9 +31,11 @@ resource "aws_s3_bucket_versioning" "logs" {
   }
 }
 
-# SSE-S3 on the log bucket. CloudTrail delivers to an SSE-S3 bucket with no extra
-# grant; a dedicated CMK would add a KMS request on every high-volume log write and
-# a service-principal key grant, which the lab does not need for the audit path.
+# SSE-S3 on the log bucket itself. On top of this, Phase 5 adds a customer-managed
+# key on the trail (see kms_key_id below and the aws_kms_key.cloudtrail key in
+# remediation.tf), so CloudTrail envelope-encrypts each log file before it is
+# delivered here. That satisfies FSBP CloudTrail.2 and keeps the audit-log key
+# separate from the data CMK.
 resource "aws_s3_bucket_server_side_encryption_configuration" "logs" {
   bucket = aws_s3_bucket.logs.id
   rule {
@@ -110,6 +112,9 @@ resource "aws_cloudtrail" "main" {
   include_global_service_events = true
   is_multi_region_trail         = true
   enable_log_file_validation    = true
+
+  # FSBP CloudTrail.2: encrypt log files at rest with a customer-managed key.
+  kms_key_id = aws_kms_key.cloudtrail.arn
 
   # Management events are free. One data-event selector, scoped to the data bucket
   # only, logs object-level reads and writes while keeping the paid volume tiny.

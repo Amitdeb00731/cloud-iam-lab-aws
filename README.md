@@ -1,9 +1,10 @@
 # Cloud IAM Lab (AWS): securing an account where identity is the perimeter
 
-> **Status: in progress.** The AWS counterpart of the Azure Cloud IAM Lab, built
-> stage for stage to show the same controls across two clouds. Plan and six phase
-> guides are in [docs/](docs/README.md); phase results land here as each is
-> completed.
+> **Status: Phases 1 to 5 complete; Phase 6 (report) upcoming.** The AWS
+> counterpart of the Azure Cloud IAM Lab, built stage for stage to show the same
+> controls across two clouds. The plan and the six phase guides are in
+> [docs/](docs/README.md); the results of each completed phase are below and in
+> `evidence/`.
 
 ## The business problem
 
@@ -18,8 +19,8 @@ controls hold, and would I see it happen?**
 ## What this lab shows
 
 - **Identity and access:** an account with no standing privilege, administrative
-  access elevated just in time, access through IAM Identity Center only, MFA
-  enforced, and service control policies plus IAM conditions constraining every
+  access elevated just in time through MFA-gated IAM roles, no long-lived human
+  credentials, and service control policies plus IAM conditions constraining every
   principal.
 - **Data protection:** an S3 bucket reachable only by an IAM principal over a VPC
   endpoint, encrypted with a KMS customer-managed key, with a data-classification
@@ -38,9 +39,9 @@ controls hold, and would I see it happen?**
 
 ```mermaid
 flowchart LR
-  subgraph ORG["AWS Organizations + Identity Center"]
-    P["Personas + admin identity<br/>elevated just in time"]
-    ROOT["Root user<br/>break-glass, MFA only"]
+  subgraph ORG["AWS Organizations + IAM roles"]
+    P["Operator + lab roles<br/>admin elevated just in time"]
+    ROOT["Root user<br/>credential-less, centralized root access"]
     SCP["SCPs + IAM conditions<br/>MFA, UK-only, one Region"]
   end
   subgraph ACCT["AWS account (eu-north-1)"]
@@ -60,7 +61,11 @@ See the full environment diagram and rationale in the
 
 ## Results
 
-Phase results are published here as each phase completes.
+Each completed phase is written up in its guide under `docs/`, with evidence in
+`evidence/`. The Security Hub posture score moved from a 53 percent baseline to a
+projected 71 percent after remediation; the exact after figure is awaiting the
+service's periodic re-evaluation and is recorded in
+[docs/05-posture.md](docs/05-posture.md) once captured.
 
 | Phase | Focus | Status |
 | --- | --- | --- |
@@ -68,23 +73,23 @@ Phase results are published here as each phase completes.
 | 2 | Data protection (locked S3, KMS CMK, VPC endpoint) | Complete |
 | 3 | Visibility (CloudTrail, Athena, GuardDuty) | Complete |
 | 4 | Simulate and detect (five techniques, Athena + Sigma) | Complete |
-| 5 | Posture and access review (Security Hub before/after) | Planned |
-| 6 | Report (incident report, IAM model, business summary) | Planned |
+| 5 | Posture and access review (Security Hub before/after) | Complete |
+| 6 | Report (incident report, IAM model, business summary) | Upcoming |
 
 ## Repository layout
 
 ```
 cloud-iam-lab-aws/
 ├─ docs/           the plan and the six phase guides
-├─ iac/terraform/  the environment as code (S3, KMS, VPC endpoint)
+├─ iac/terraform/  the environment as code (S3, KMS, VPC, posture, remediation)
 ├─ detections/
 │  ├─ aws/         Athena SQL and EventBridge patterns
 │  └─ sigma/       portable versions of each detection
-├─ config/         permission sets and SCPs exported as JSON
+├─ config/         IAM role and policy definitions and SCPs, as JSON
 ├─ scripts/        repeatable, benign validation scripts
 ├─ evidence/       per-phase evidence, alert records, coverage matrix
-├─ report/         incident report, IAM model, business summary
-└─ lab-notes.md    what broke and how I fixed it
+├─ report/         incident report, IAM model, business summary (Phase 6)
+└─ lab-notes.md    engineering log: the decisions and fixes behind the build
 ```
 
 ## Scope and safety

@@ -8,9 +8,10 @@ workload account rather than IAM Identity Center permission sets. The reason is
 recorded below, and the control outcome (no standing privilege, MFA-gated access,
 just-in-time admin, full audit trail) is identical.
 
-Everything in this phase is free. Region for the console work is **US East
-(N. Virginia) us-east-1**, which is uniform across the build; the London framing
-lives in the report, not the Region.
+Everything in this phase is free. IAM identities are global, and the lab's
+workload Region is **`eu-north-1`** (the one Region the account's AWS-managed
+region guardrail leaves open; London `eu-west-2` was not available). The UK
+framing lives in the report, not the Region.
 
 ## Why IAM roles, not Identity Center permission sets
 
@@ -145,7 +146,7 @@ account.
 
 | Policy | What it denies | Key condition |
 | --- | --- | --- |
-| `deny-outside-us-east-1` | Any action in another Region | `aws:RequestedRegion` not `us-east-1`, global and sign-in services exempted |
+| `deny-outside-eu-north-1` | Any action in another Region | `aws:RequestedRegion` not `eu-north-1`, global and sign-in services exempted |
 | `deny-disable-security` | Turning off the audit path | `cloudtrail:StopLogging`, `config:Delete*`, loosening S3 public-access block |
 | `require-mfa-sensitive` | Sensitive actions without MFA | `aws:MultiFactorAuthPresent` = false on chosen actions |
 
@@ -172,5 +173,5 @@ result or a denied CloudTrail event.
 - `operator` reads only after assuming `ReadOnlyRole`, and cannot write.
 - `AdminJITRole` grants admin only when assumed, and the session lapses in an hour.
 - CloudTrail shows the `AssumeRole` events for the elevations.
-- An action outside `us-east-1` is denied on Curiosity Unlocked once Step 6 is in,
+- An action outside `eu-north-1` is denied on Curiosity Unlocked once Step 6 is in,
   while the management account is unaffected.

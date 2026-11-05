@@ -1,6 +1,6 @@
-# Report
+# Report (Phase 6, upcoming)
 
-Phase 6 output ([docs/06-report.md](../docs/06-report.md)):
+Phase 6 will produce ([docs/06-report.md](../docs/06-report.md)):
 
 - `incident-report.md`: the five techniques as one intrusion, ATT&CK-mapped.
 - `iam-model.md`: the access-management control write-up for a risk reader.
