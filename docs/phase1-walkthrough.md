@@ -36,6 +36,11 @@ Center or an external IdP; the control design does not change.
 Rule of thumb: **guardrails are set in the management account; the access model
 and the lab's resources live in Curiosity Unlocked.**
 
+**Evidence.** The organisation structure: the management account and the
+`Workloads` OU holding Curiosity Unlocked.
+
+![The AWS Organizations structure: the management account and the Workloads OU holding the member account](../evidence/phase1/org-structure.png)
+
 ## The access model at a glance
 
 One daily identity with no power of its own, and three roles it can borrow only
@@ -48,7 +53,12 @@ dropped.
 | `ReadOnlyRole` | `ReadOnlyAccess` | Assumed by any MFA'd principal in the account | default |
 | `ContributorRole` | `PowerUserAccess` | Assumed by any MFA'd principal in the account | default |
 | `AdminJITRole` | `AdministratorAccess` | Assumed by any MFA'd principal in the account | 1 hour max |
-| account root | full | Break-glass only, MFA on, otherwise unused | n/a |
+| account root | full | Break-glass only, credential-less with centralized root access | n/a |
+
+**Evidence.** The workload account's root user is credential-less; root actions
+are brokered centrally from the organisation (centralized root access).
+
+![Centralized root access managed from the organisation, with the member account root credential-less](../evidence/phase1/centralized-root-access.png)
 
 ## Step 1: The three roles (IAM, Curiosity Unlocked)
 
@@ -68,8 +78,14 @@ role.
 | `ContributorRole` | `PowerUserAccess` | none |
 | `AdminJITRole` | `AdministratorAccess` | set **Maximum session duration = 1 hour** on the role summary |
 
-**Evidence:** screenshot the three roles in the Roles list and the AdminJITRole
-summary showing the 1 hour session cap. Save to `evidence/phase1/`.
+**Evidence.** The three roles in the Roles list, the AdminJITRole summary showing
+the one hour maximum session duration, and the shared custom trust policy that
+requires MFA.
+
+![The three lab roles in the IAM Roles list](../evidence/phase1/roles-list.png)
+![The IAM Roles list continued](../evidence/phase1/roles-list-2.png)
+![The AdminJITRole summary with a one hour maximum session duration](../evidence/phase1/adminjit-session-1h.png)
+![The role trust policy requiring aws:MultiFactorAuthPresent](../evidence/phase1/role-trust-mfa.png)
 
 ## Step 2: The daily operator user (IAM, Curiosity Unlocked)
 
@@ -83,8 +99,10 @@ summary showing the 1 hour session cap. Save to `evidence/phase1/`.
 The whole point: `operator` can read nothing and change nothing on its own. Its
 only power is to request a role, and the role answers only with MFA.
 
-**Evidence:** screenshot the operator Permissions tab showing the single inline
-policy and no managed policies.
+**Evidence.** The operator Permissions tab: a single inline policy and no managed
+policies.
+
+![The operator user Permissions tab showing only the assume-lab-roles inline policy](../evidence/phase1/operator-permissions.png)
 
 ## Step 3: MFA on the operator
 
@@ -92,8 +110,9 @@ policy and no managed policies.
    > **Assign MFA device** > name `operator-mfa` > **Authenticator app** > scan
    the QR code with an authenticator app > enter two consecutive codes > add.
 
-**Evidence:** screenshot the operator Security credentials page showing an MFA
-device assigned.
+**Evidence.** The operator Security credentials page with an MFA device assigned.
+
+![The operator Security credentials page showing an assigned MFA device](../evidence/phase1/operator-mfa.png)
 
 ## Step 4: Verify the model (incognito sign-in)
 
@@ -112,8 +131,12 @@ Do this in a private window so it does not disturb the admin session.
 5. The switches worked only because the sign-in carried MFA; without it the roles
    refuse.
 
-**Evidence:** the denied state, the read-only state, and the admin state;
-plus the CloudTrail `AssumeRole` records (Step 5).
+**Evidence.** The denied state before any switch, and the read-only state after
+one switch. The admin state is evidenced by the one hour session cap in Step 1 and
+the `AssumeRole` records in Step 5.
+
+![The operator denied access to S3 before assuming any role](../evidence/phase1/operator-denied.png)
+![Read access to S3 after switching into ReadOnlyRole](../evidence/phase1/readonly-after-switch.png)
 
 ## Step 5: The audit trail (CloudTrail, admin window)
 
@@ -127,8 +150,9 @@ plus the CloudTrail `AssumeRole` records (Step 5).
 This is the audit answer to "who elevated, to what, and when". From Phase 3 a
 dedicated trail and Athena turn this into queryable detections.
 
-**Evidence:** screenshot the operator `AssumeRole` rows. Export the rows to
-`evidence/phase1/cloudtrail-assumerole.csv` if useful.
+**Evidence.** The operator `AssumeRole` rows in CloudTrail Event history.
+
+![CloudTrail Event history showing the operator AssumeRole events](../evidence/phase1/cloudtrail-assumerole.png)
 
 ## Step 6: Guardrails with SCPs (Organizations, management account)
 
@@ -153,8 +177,11 @@ account.
 3. Validate with the **IAM policy simulator** or by attempting a denied action and
    reading the deny in CloudTrail.
 
-**Evidence:** export each SCP JSON to `config/scp/`, and capture a simulator
-result or a denied CloudTrail event.
+**Evidence.** The service control policies attached to the `Workloads` OU, and the
+`require-mfa-sensitive` policy detail. Each SCP JSON is in `config/scp/`.
+
+![The service control policies attached to the Workloads OU](../evidence/phase1/scp-attached.png)
+![The require-mfa-sensitive SCP denying sensitive actions without MFA](../evidence/phase1/scp-require-mfa.png)
 
 ## Phase 1 deliverables
 

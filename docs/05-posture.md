@@ -18,6 +18,10 @@ not formal compliance.
 Screenshot both before you change anything. Security Hub has a 30-day free trial;
 GuardDuty's findings feed into it.
 
+**Evidence.** The AWS Config recorder on, which Security Hub depends upon.
+
+![The AWS Config recorder on](../evidence/phase5/config-recorder.png)
+
 ## 5.2 Remediate the top items
 
 Work the highest-weight findings that fit the lab, for example:
@@ -71,8 +75,12 @@ up to about 24 hours after the change; this section records the after figure onc
 that run completes. The score measures improvement against best practice, not
 compliance or certification.
 
-Evidence: `evidence/phase5/securityhub-baseline.md`, `securityhub-score-before.png`,
-and `securityhub-score-after.png` (to follow).
+Evidence: `evidence/phase5/securityhub-baseline.md`, the baseline score below, and
+`securityhub-score-after.png` (to follow once Security Hub completes its periodic
+re-evaluation).
+
+![The Security Hub FSBP score before remediation](../evidence/phase5/securityhub-score-before.png)
+![The Security Hub FSBP controls, passed and failed](../evidence/phase5/securityhub-fsbp-controls.png)
 
 ### Fixes applied
 
@@ -126,6 +134,10 @@ assumable roles kept (no standing administrator, admin only through the one-hour
 MFA-gated AdminJITRole); and the two IAM Access Analyzer findings marked intended
 (expected AWS Organizations management access). Detail in
 `evidence/phase5/access-review.md`.
+
+**Evidence.** The two expected IAM Access Analyzer external-access findings.
+
+![IAM Access Analyzer: the two expected organisation-management findings](../evidence/phase5/access-analyzer-findings.png)
 
 ### Reproduce
 

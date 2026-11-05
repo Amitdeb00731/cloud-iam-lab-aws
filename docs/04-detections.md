@@ -59,6 +59,11 @@ Tune: exclude your own test host's IP once validated, or the corporate egress IP
 in a real account. Run the query on a 15-minute EventBridge schedule, map to
 T1110.003.
 
+**Evidence.** The Athena detection: failed console logins grouped by source,
+flagging the sprayed host.
+
+![T1110.003 password spraying: failed logins grouped by source](../evidence/phase4/athena-t1-spray.png)
+
 ## 4.2 Valid account from an unusual source (T1078.004)
 
 Benign check: sign in as a test user from a source you control that is unusual for
@@ -104,13 +109,18 @@ WHERE eventname IN ('AttachUserPolicy', 'AttachRolePolicy',
 Tune: the JIT elevation path has a known initiator and session tag; keep only
 grants that are not that path. Map to T1098.003.
 
+**Evidence.** The Athena detection: an administrative policy attached outside the
+just-in-time path.
+
+![T1098.003 an administrative policy attached outside the just-in-time path](../evidence/phase4/athena-t3-admin.png)
+
 ## 4.4 New credential on a principal (T1098.001)
 
 Benign check: create an access key on a test IAM user (or add a credential to a
 test principal), then delete it.
 
 Detection idea: a new long-lived credential is a common cloud persistence step and
-is rare in a small, Identity-Center-based account where access keys should almost
+is rare in a small, role-based lab account where access keys should almost
 never be created.
 
 ```sql
@@ -124,6 +134,11 @@ WHERE eventname IN ('CreateAccessKey', 'CreateLoginProfile',
 
 Tune: allowlist any known automation that legitimately rotates credentials. In
 this lab there should be none, which is the point. Map to T1098.001.
+
+**Evidence.** The Athena detection: a new long-lived credential created on a test
+principal.
+
+![T1098.001 a new long-lived credential created](../evidence/phase4/athena-t4-credential.png)
 
 ## 4.5 Storage exposure and read (T1530)
 
@@ -158,6 +173,12 @@ WHERE eventname = 'GetObject'
 Score: detected on both planes. Note the preventive control (Block Public Access
 and the VPC-endpoint condition should stay on, protected by the G5 SCP) alongside
 the detection.
+
+**Evidence.** The matched pair: the control-plane change to the bucket exposure,
+and the data-plane read of the confidential object.
+
+![T1530 control plane: a change to the bucket exposure](../evidence/phase4/athena-t5-data-control.png)
+![T1530 data plane: a read of a confidential object](../evidence/phase4/athena-t5-data-read.png)
 
 ## Sigma versions
 

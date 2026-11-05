@@ -39,6 +39,10 @@ In `kms.tf`:
 Enabling rotation and a tight key policy is the AWS equivalent of Key Vault purge
 protection and the CMK grant: control of the encryption key stays with you.
 
+**Evidence.** The customer-managed key with automatic rotation enabled.
+
+![The KMS customer-managed key with automatic rotation enabled](../evidence/phase2/kms-key-rotation.png)
+
 ## 2.3 S3 bucket, locked down
 
 In `s3.tf`, set on the bucket:
@@ -53,9 +57,22 @@ In `s3.tf`, set on the bucket:
 | Bucket policy: require the VPC endpoint | `aws:SourceVpce` condition | Only the private path reaches it |
 | Public access via ACLs | disabled (bucket owner enforced) | No ACL-based exposure |
 
+**Evidence.** Account-level Block Public Access on, default encryption set to
+SSE-KMS on the customer-managed key, and the bucket policy with the TLS and
+confidential-prefix statements.
+
+![Account-level S3 Block Public Access turned on](../evidence/phase2/public-access-block.png)
+![Default encryption is SSE-KMS on the customer-managed key](../evidence/phase2/encryption-kms.png)
+![The bucket policy: DenyInsecureTransport and the confidential-prefix restriction](../evidence/phase2/bucket-policy.png)
+
 Create a VPC with no internet gateway and an S3 gateway VPC endpoint, so access to
 the bucket stays on the private AWS network and name resolution never leaves it.
 This is the AWS equivalent of the Azure private endpoint and private DNS zone.
+
+**Evidence.** The VPC route table: an S3 gateway endpoint route and no internet
+gateway.
+
+![The VPC route table: an S3 gateway endpoint route and no internet gateway](../evidence/phase2/vpce-and-no-igw.png)
 
 ## 2.4 Classification model
 
@@ -85,6 +102,15 @@ Run and record each negative test; the failures are the evidence:
    with an IAM token succeeds.
 4. **Cross-prefix access fails:** a principal allowed on `internal/` is denied on
    `confidential/`.
+
+**Evidence.** The anonymous and non-TLS reads denied, the off-path read denied by
+`aws:SourceVpce`, and the matched confidential pair: `AdminJITRole` allowed,
+`ContributorRole` denied.
+
+![Anonymous and non-TLS reads are both denied](../evidence/phase2/anonymous-and-tls-denied.png)
+![Off-path read denied by the aws:SourceVpce condition when the endpoint is enforced](../evidence/phase2/vpce-offpath-denied.png)
+![AdminJITRole reads the confidential object](../evidence/phase2/confidential-allowed.png)
+![ContributorRole is denied the same object with a 403](../evidence/phase2/confidential-denied.png)
 
 Upload a dummy file (lorem-ipsum "customer records", never real data) to
 `confidential/` for the Phase 4 exfiltration test.

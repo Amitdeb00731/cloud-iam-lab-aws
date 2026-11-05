@@ -24,6 +24,11 @@ the Phase 2 code (`iac/terraform/cloudtrail.tf`). The trail is applied as
    bucket only and the volume stays tiny.
 3. Log-file validation is on so tampering is detectable.
 
+**Evidence.** The trail configuration: multi-region, log file validation on, and
+SSE-KMS encryption.
+
+![The CloudTrail trail: multi-region, log file validation, SSE-KMS encryption](../evidence/phase3/cloudtrail-config.png)
+
 ## 3.2 Make the logs queryable
 
 1. **Athena:** create a table over the CloudTrail S3 prefix (the AWS console
@@ -34,6 +39,11 @@ the Phase 2 code (`iac/terraform/cloudtrail.tf`). The trail is applied as
    retention short.
 3. Decide one primary query surface for Phase 4 and note it in the README; Athena
    over S3 is the cheapest for a lab.
+
+**Evidence.** An Athena query over `cloudtrail_logs` returning management and data
+events.
+
+![An Athena query over cloudtrail_logs returning management and data events](../evidence/phase3/athena-query.png)
 
 ## 3.3 Turn on the managed detections
 
@@ -48,6 +58,13 @@ you can tear them down together:
 
 Route GuardDuty findings and chosen CloudTrail events through EventBridge to an
 SNS topic (email) so a detection surfaces without polling.
+
+**Evidence.** GuardDuty enabled with its protection plans, a sample finding, and
+the alert delivered to the inbox through EventBridge and SNS.
+
+![GuardDuty enabled with its protection plans](../evidence/phase3/guardduty-enabled.png)
+![A GuardDuty finding (sample Tor IP caller)](../evidence/phase3/guardduty-finding.png)
+![The alert delivered to the inbox through EventBridge and SNS](../evidence/phase3/alert-email.png)
 
 ## 3.4 The cost trap: AWS Config
 
