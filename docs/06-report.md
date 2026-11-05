@@ -2,7 +2,7 @@
 
 **Goal:** turn the build into the three artefacts a security and controls function
 produces: a technical incident report, an IAM control write-up for a risk reader,
-and a one-page business summary. Same structure and house style as Build 1, and
+and a business stakeholder report. Same structure and house style as Build 1, and
 the same teardown discipline at the end.
 
 ## 6.1 Incident report
@@ -36,12 +36,13 @@ the access-management expectations a bank's controls team checks:
 - Monitoring and detection (CloudTrail, GuardDuty, the Athena detections and the
   coverage matrix).
 
-## 6.3 Business summary
+## 6.3 Business report
 
-`report/business-companion.md`, one page, plain language, framed against UK
-operational resilience (PRA and FCA important business services and impact
-tolerances): what an identity compromise in a cloud account would mean for a
-service that depends on it, and which controls hold the impact inside tolerance.
+`report/business-report.md`, a business stakeholder report in corporate language,
+framed against UK operational resilience (PRA and FCA important business services
+and impact tolerances): what an identity compromise in a cloud account would mean
+for a service that depends on it, which controls hold the impact inside tolerance,
+and a layers-of-defence diagram for a business reader.
 
 ## 6.4 Teardown
 
@@ -58,8 +59,8 @@ service that depends on it, and which controls hold the impact inside tolerance.
 ## Phase 6 deliverables
 
 - `report/incident-report.md`, `report/iam-model.md`,
-  `report/business-companion.md`, `report/README.md` index.
-- Commit: `Phase 6: incident report, IAM model and business summary`.
+  `report/business-report.md`, `report/README.md` index.
+- Commit: `Phase 6: incident report, IAM model and business report`.
 
 ## House style (carried from Build 1)
 

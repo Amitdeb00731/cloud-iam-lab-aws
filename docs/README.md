@@ -12,7 +12,7 @@ stage, to show the same controls across two clouds.
 | 3 | [Visibility](03-visibility.md) | CloudTrail, Athena, GuardDuty, telemetry coverage |
 | 4 | [Simulate and detect](04-detections.md) | Five cloud detections, Athena SQL + Sigma, coverage matrix |
 | 5 | [Posture and access review](05-posture.md) | Security Hub before/after, access review |
-| 6 | [Report](06-report.md) | Incident report, IAM model, business summary |
+| 6 | [Report](06-report.md) | Incident report, IAM model, business report |
 
 For a high-level visual overview across all phases, see
 [architecture-diagrams.md](architecture-diagrams.md): system and account topology,

@@ -108,7 +108,7 @@ service's periodic re-evaluation and is recorded in
 | 3 | Visibility (CloudTrail, Athena, GuardDuty) | Complete |
 | 4 | Simulate and detect (five techniques, Athena + Sigma) | Complete |
 | 5 | Posture and access review (Security Hub before/after) | Complete |
-| 6 | Report (incident report, IAM model, business summary) | Complete |
+| 6 | Report (incident report, IAM model, business report) | Complete |
 
 ## Repository layout
 
@@ -122,7 +122,7 @@ cloud-iam-lab-aws/
 ├─ config/         IAM role and policy definitions and SCPs, as JSON
 ├─ scripts/        repeatable, benign validation scripts
 ├─ evidence/       per-phase evidence, alert records, coverage matrix
-├─ report/         incident report, IAM model, business summary (Phase 6)
+├─ report/         incident report, IAM model, business report (Phase 6)
 └─ lab-notes.md    engineering log: the decisions and fixes behind the build
 ```
 
