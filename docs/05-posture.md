@@ -5,6 +5,23 @@ run one access review, so the build shows the governance half of cloud security,
 not just detections. Same honesty rule as Build 1: the figures show improvement,
 not formal compliance.
 
+The posture loop, from baseline through remediation to re-score and access review:
+
+```mermaid
+flowchart LR
+  CONFIG["AWS Config<br/>resource recorder"]
+  SH["Security Hub<br/>FSBP standard"]
+  AA["IAM Access Analyzer<br/>plus credential report"]
+  BASE["Baseline score: 53%"]
+  FIX["Remediation as code<br/>remediation.tf, trail KMS"]
+  AFTER["Re-scored posture<br/>projected about 71%"]
+  REVIEW["Access review<br/>recorded decision per identity"]
+
+  CONFIG --> SH --> BASE --> FIX --> AFTER
+  AA --> REVIEW
+  SH -. "depends on" .- CONFIG
+```
+
 ## 5.1 Baseline the scores
 
 1. **Security Hub security score:** enable AWS Security Hub in `eu-north-1` with the

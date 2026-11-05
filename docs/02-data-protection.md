@@ -5,6 +5,33 @@ an IAM principal, over a private path, with a customer-managed key, can reach it
 Everything is deployed from Terraform so the environment is reproducible and
 Build 3 can scan the same code.
 
+The control model: the one allowed path to the bucket, and every denied path:
+
+```mermaid
+flowchart LR
+  ANON["Anonymous from internet"]
+  NONTLS["Non-TLS request"]
+  OFFPATH["Off-path request<br/>not via VPC endpoint"]
+  PRIN["IAM principal<br/>over VPC endpoint"]
+
+  subgraph VPC["VPC 10.20.0.0/16 (no internet gateway)"]
+    VPCE["S3 gateway endpoint"]
+  end
+  subgraph BUCKET["S3 bucket cloud-iam-lab-data (eu-north-1)"]
+    BPA["Block Public Access, all four"]
+    POL["Bucket policy<br/>DenyInsecureTransport<br/>RequireVpcEndpointForObjects<br/>RestrictConfidentialPrefix"]
+    PFX["Prefixes: public / internal / confidential"]
+  end
+  KMS["KMS customer-managed key<br/>rotation on, tight key policy"]
+
+  ANON -->|"AccessDenied"| BPA
+  NONTLS -->|"AccessDenied, SecureTransport"| POL
+  OFFPATH -->|"403, aws:SourceVpce"| POL
+  PRIN --> VPCE --> POL --> PFX
+  KMS -->|"SSE-KMS at rest"| BUCKET
+  PFX -->|"confidential: AdminJIT only"| OK["Allowed read"]
+```
+
 ## 2.1 Terraform baseline
 
 As-built note: the lab uses the Phase 1 IAM-roles model, not Identity Center, and

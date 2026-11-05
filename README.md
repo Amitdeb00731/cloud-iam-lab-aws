@@ -61,6 +61,38 @@ trust-boundary diagrams is in
 [docs/architecture-diagrams.md](docs/architecture-diagrams.md). The plan and
 rationale are in the [Build 2 on AWS guides](docs/README.md).
 
+### Trust boundaries
+
+What an action must cross to reach the data, and the control guarding each boundary:
+
+```mermaid
+flowchart TB
+  subgraph INET["Untrusted: public internet"]
+    ATTACKER["Anonymous or stolen-credential actor"]
+  end
+  subgraph ORGB["Organisation boundary: management account"]
+    SCPZ["SCP guardrails<br/>Region, MFA, no-disable-security"]
+    subgraph ACCTB["Account boundary: Curiosity Unlocked"]
+      IDB["Identity boundary<br/>operator plus MFA-gated roles, no standing admin"]
+      subgraph NETB["Network boundary: VPC, no internet gateway"]
+        EP["S3 gateway endpoint"]
+      end
+      subgraph DATAB["Data boundary"]
+        BKT["S3 bucket: BPA, TLS-only, prefix policy"]
+        KEYB["KMS CMK, the decryption control point"]
+      end
+      LOGB["Audit boundary<br/>CloudTrail, Athena, GuardDuty"]
+    end
+  end
+
+  ATTACKER -->|"must pass"| SCPZ
+  SCPZ --> IDB
+  IDB -->|"MFA plus AssumeRole"| EP
+  EP --> BKT
+  KEYB -->|"guards"| BKT
+  IDB -. "all actions logged" .-> LOGB
+```
+
 ## Results
 
 Each completed phase is written up in its guide under `docs/`, with evidence in

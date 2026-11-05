@@ -36,6 +36,32 @@ Center or an external IdP; the control design does not change.
 Rule of thumb: **guardrails are set in the management account; the access model
 and the lab's resources live in Curiosity Unlocked.**
 
+The account topology and where the guardrails sit:
+
+```mermaid
+flowchart TD
+  subgraph MGMT["Management account 618790904616 (Cloud-Corp)"]
+    ORGS["AWS Organizations<br/>org admin and payer"]
+    CRA["Centralized root access<br/>MFA on management root"]
+    BASE["AWS-managed baseline SCPs<br/>attached at Root"]
+  end
+  CUSTOM["Custom SCPs on Workloads OU<br/>deny-outside-eu-north-1<br/>deny-disable-security<br/>require-mfa-sensitive"]
+  subgraph WLOU["Workloads OU"]
+    subgraph MEMBER["Curiosity Unlocked 963910216975 (workload)"]
+      ACCESS["Identity and access model<br/>operator plus three MFA-gated roles"]
+      RES["Lab resources<br/>S3, KMS, VPC, CloudTrail, GuardDuty"]
+      MROOT["Member root<br/>credential-less"]
+    end
+  end
+  IDADM["Identity delegated admin 795804715588<br/>left as is"]
+
+  ORGS --> WLOU
+  BASE -. "inherited" .-> WLOU
+  CUSTOM --> MEMBER
+  CRA -. "brokers root actions" .-> MROOT
+  ORGS --- IDADM
+```
+
 **Evidence.** The organisation structure: the management account and the
 `Workloads` OU holding Curiosity Unlocked.
 
@@ -59,6 +85,28 @@ dropped.
 are brokered centrally from the organisation (centralized root access).
 
 ![Centralized root access managed from the organisation, with the member account root credential-less](../evidence/phase1/centralized-root-access.png)
+
+The elevation flow the steps below build, end to end:
+
+```mermaid
+sequenceDiagram
+  actor U as operator
+  participant STS as AWS STS
+  participant R as Lab role
+  participant CT as CloudTrail
+  U->>U: Sign in with password plus MFA
+  Note over U: No standing access, can only assume roles
+  U->>STS: AssumeRole ReadOnly / Contributor / AdminJIT
+  STS->>STS: Trust check aws:MultiFactorAuthPresent = true
+  alt MFA present
+    STS-->>R: Temporary credentials
+    Note over R: ReadOnly reads, Contributor is power user, AdminJIT is admin for 1 hour
+    R->>CT: Role actions logged
+  else MFA absent
+    STS-->>U: AccessDenied
+  end
+  U->>CT: AssumeRole events recorded, who and which role and when
+```
 
 ## Step 1: The three roles (IAM, Curiosity Unlocked)
 

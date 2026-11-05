@@ -34,6 +34,26 @@ filter so Athena scans little.
 | Persistence | T1098.001 Additional cloud credentials | Create an access key or a new credential on a test principal | CloudTrail `CreateAccessKey` | new long-lived credential created |
 | Collection | T1530 Data from cloud storage | Relax the bucket policy, then read the `confidential/` object | CloudTrail `PutBucketPolicy` + S3 data event | exposure change plus object read |
 
+The detection loop, and the five techniques with their honest scores:
+
+```mermaid
+flowchart LR
+  ACT["Benign validation action<br/>against a test identity"]
+  LOG["CloudTrail / GuardDuty"]
+  DET["Athena SQL detection<br/>plus portable Sigma rule"]
+  SCORE["Scored in coverage matrix"]
+  ACT --> LOG --> DET --> SCORE
+
+  subgraph TECH["Five techniques, mapped to MITRE ATT&CK"]
+    T1["T1110.003 Password spraying: Detected"]
+    T2["T1078.004 Valid account, unusual source: Partial"]
+    T3["T1098.003 Admin outside JIT: Detected"]
+    T4["T1098.001 New credential: Detected"]
+    T5["T1530 Data from storage: Detected"]
+  end
+  DET -.-> TECH
+```
+
 ## 4.1 Password spraying (T1110.003)
 
 Benign check: sign in a few test users with a knowingly wrong password from one

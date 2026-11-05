@@ -8,6 +8,28 @@ In AWS the "SIEM" is assembled rather than bought: CloudTrail is the audit log,
 and you query it with Athena or CloudWatch Logs Insights, route notable events
 with EventBridge, and let GuardDuty add managed threat detections on top.
 
+How each signal reaches a queryable place, and how a finding surfaces without polling:
+
+```mermaid
+flowchart LR
+  subgraph SRC["Signals"]
+    MGMT["CloudTrail management events"]
+    DATA["S3 data events, data bucket only"]
+    GD["GuardDuty findings"]
+  end
+  TRAIL["Multi-region trail<br/>log-file validation, SSE-KMS"]
+  LOGS["Log bucket cloud-iam-lab-logs<br/>locked down, trail-only policy"]
+  ATHENA["Athena<br/>cloud_iam_lab.cloudtrail_logs"]
+  EB["EventBridge rule"]
+  SNS["SNS topic"]
+  MAIL["Email inbox"]
+
+  MGMT --> TRAIL
+  DATA --> TRAIL
+  TRAIL --> LOGS --> ATHENA
+  GD --> EB --> SNS --> MAIL
+```
+
 ## 3.1 CloudTrail as the audit path
 
 As-built: the trail and its log bucket are Terraform, in `eu-north-1`, alongside
