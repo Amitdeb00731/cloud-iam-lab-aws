@@ -95,6 +95,19 @@ real estate with many users and locations, this would be detected directly. The
 result is recorded honestly rather than overstated. The full technical detail and
 evidence are in the incident report and the phase evidence.
 
+### Security posture, before and after
+
+The account's overall configuration was also measured against AWS's own
+best-practice standard, before and after the control work. The score moved from 53
+percent to 95 percent. The remaining gaps are controls that depend on paid services
+or workloads the environment deliberately does not run, and they are listed with a
+reason in the evidence. This is a health measure of configuration against best
+practice, not a certification.
+
+![Security posture before the control work, scoring 53 percent](../evidence/phase5/securityhub-score-before.png)
+
+![Security posture after the control work, scoring 95 percent](../evidence/phase5/securityhub-score-after.png)
+
 ## 6. Operational resilience assessment
 
 For a regulated firm, the relevant question is whether an important business service
