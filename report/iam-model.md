@@ -138,9 +138,11 @@ Stated plainly, so the mapping is not overclaimed:
   permission sets, so access uses IAM roles with a base credential. A production
   landing zone would centralise this behind Identity Center or an external IdP.
 - **Posture measures improvement, not compliance.** The Security Hub score moved
-  from a 53 percent baseline towards a projected 71 percent after remediation; it
-  is a best-practice measure, not a certification. The exact after figure follows
-  the service's periodic re-evaluation. Evidence:
+  from a 53 percent baseline to 95 percent after remediation (318 controls passed,
+  17 failed, the 17 being the documented accepted set). It is a best-practice
+  measure, not a certification, and part of the rise reflects Security Hub
+  evaluating a wider control set over the period, many of which pass by default for
+  services the lab does not run. Evidence:
   [`evidence/phase5/securityhub-baseline.md`](../evidence/phase5/securityhub-baseline.md).
 - **One detection is partial.** Unusual-source credential use (T1078.004) relies on
   the GuardDuty managed layer, because a genuine new-source sign-in could not be

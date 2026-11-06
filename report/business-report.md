@@ -125,9 +125,9 @@ Stated plainly, so the position is not overclaimed:
   environment would place a central identity provider in front, so staff access is
   joined, moved, and removed in one place.
 - The security posture was measured against industry best practice and improved
-  from a 53 percent baseline towards a projected 71 percent after remediation. This
-  is a health measure, not a certification, and the final figure follows the
-  monitoring service's periodic re-evaluation.
+  from a 53 percent baseline to 95 percent after remediation. The remaining gaps
+  are controls that depend on paid services or workloads the environment
+  deliberately does not run. This is a health measure, not a certification.
 - One of the five detections depends on the cloud provider's managed anomaly
   service, as noted in Section 5.
 

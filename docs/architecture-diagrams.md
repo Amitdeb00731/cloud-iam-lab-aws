@@ -154,7 +154,7 @@ flowchart LR
   AA["IAM Access Analyzer<br/>plus credential report"]
   BASE["Baseline score: 53%"]
   FIX["Remediation as code<br/>remediation.tf, trail KMS"]
-  AFTER["Re-scored posture<br/>projected about 71%"]
+  AFTER["Re-scored posture: 95%"]
   REVIEW["Access review<br/>recorded decision per identity"]
 
   CONFIG --> SH --> BASE --> FIX --> AFTER

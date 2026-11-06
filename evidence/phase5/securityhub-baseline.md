@@ -72,9 +72,16 @@ flip IAM.6 to passed, which is called out honestly rather than claimed.
 | IAM.2 | Low | operator has one directly-attached policy by design: a single base identity whose only permission is an MFA-gated AssumeRole to the lab roles. A group for one user adds nothing. See `access-review.md`. |
 | EC2.6 | Medium | VPC flow logs. The lab runs no instances or traffic-bearing interfaces, so flow logs would capture almost nothing. Network path control is the no-internet-gateway VPC and the S3 gateway endpoint. Candidate future work. |
 
-## Projected result
+## Result after remediation (confirmed)
 
-Fixing the eleven controls above moves 28 failed to 17 and 31 passed to 42, a
-projected score of about 71 percent. The exact after figure is captured in
-`securityhub-score-after.png` once Security Hub re-evaluates (allow an hour or
-two after applying).
+All eleven fixes landed and no new failure appeared. The after export shows **318
+controls passed and 17 failed**, and the 17 still failing are exactly the accept
+list above. The confirmed security score is **95 percent**, above the 71 percent
+first projected over the baseline's 59 controls with data. The denominator grew to
+335 controls with data as Security Hub accumulated evaluations for more control
+types over the period, most of which pass by default for services the lab does not
+run, so part of the rise reflects that wider set rather than the fixes alone.
+IAM.6 (hardware MFA on root), "no data" at baseline, now evaluates as passed under
+the credential-less root design. Confirmed in `securityhub-score-after.png` and
+`raw/securityhub-fsbp-after.csv` (26 individual failed checks: 0 critical, 3 high,
+22 medium, 1 low).

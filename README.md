@@ -96,10 +96,11 @@ flowchart TB
 ## Results
 
 Each completed phase is written up in its guide under `docs/`, with evidence in
-`evidence/`. The Security Hub posture score moved from a 53 percent baseline to a
-projected 71 percent after remediation; the exact after figure is awaiting the
-service's periodic re-evaluation and is recorded in
-[docs/05-posture.md](docs/05-posture.md) once captured.
+`evidence/`. The Security Hub posture score moved from a 53 percent baseline to 95
+percent after remediation (318 controls passed, 17 failed, the 17 being the
+documented accepted set of paid or not-applicable controls); the before and after
+scores and the honest reading of the figure are in
+[docs/05-posture.md](docs/05-posture.md).
 
 | Phase | Focus | Status |
 | --- | --- | --- |

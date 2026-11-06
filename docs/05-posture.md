@@ -14,7 +14,7 @@ flowchart LR
   AA["IAM Access Analyzer<br/>plus credential report"]
   BASE["Baseline score: 53%"]
   FIX["Remediation as code<br/>remediation.tf, trail KMS"]
-  AFTER["Re-scored posture<br/>projected about 71%"]
+  AFTER["Re-scored posture: 95%"]
   REVIEW["Access review<br/>recorded decision per identity"]
 
   CONFIG --> SH --> BASE --> FIX --> AFTER
@@ -83,20 +83,29 @@ point.
 
 ### Scores
 
-Baseline: **53 percent** (31 controls passed, 28 failed, 276 no data). The score
-is calculated over the 59 controls that have data; the 276 "no data" controls are
-for services the lab does not run and are not counted. After remediation:
-**pending Security Hub re-evaluation** (projected about 71 percent). Most of the
-fixed controls are periodic, so Security Hub re-scores them on its own schedule,
-up to about 24 hours after the change; this section records the after figure once
-that run completes. The score measures improvement against best practice, not
-compliance or certification.
+Baseline: **53 percent** (31 controls passed, 28 failed, over the 59 controls that
+had data at the time). After remediation: **95 percent** (318 controls passed, 17
+failed). The 17 still-failing controls carry 26 individual failed checks: 0
+critical, 3 high, 22 medium, 1 low. Every one of the eleven controls fixed in 5.2
+now passes and no new failure was introduced; the 17 that remain are exactly the
+accepted set described below, each needing a paid service or a workload the lab
+deliberately does not run, or a documented design choice.
 
-Evidence: `evidence/phase5/securityhub-baseline.md`, the baseline score below, and
-`securityhub-score-after.png` (to follow once Security Hub completes its periodic
-re-evaluation).
+Two points of honesty about the headline figure. First, the number of controls
+with data grew from 59 at baseline to 335 after, because Security Hub accumulated
+evaluation data for many more controls over the period. A large share of the added
+passes are controls that pass by default for resource types the lab does not run
+(for example, a control on a database engine that is absent counts as passed). So
+the move from 53 to 95 percent reflects both the real fixes and this wider
+evaluated set, and the realised figure came out above the 71 percent first
+projected over the smaller baseline set. Second, the score measures improvement
+against best practice; it is not compliance or certification.
+
+Evidence: `evidence/phase5/securityhub-baseline.md` for the baseline and triage,
+and the before and after console scores below.
 
 ![The Security Hub FSBP score before remediation](../evidence/phase5/securityhub-score-before.png)
+![The Security Hub FSBP score after remediation, 95 percent](../evidence/phase5/securityhub-score-after.png)
 ![The Security Hub FSBP controls, passed and failed](../evidence/phase5/securityhub-fsbp-controls.png)
 
 ### Fixes applied
@@ -140,8 +149,9 @@ and no MFA. Under AWS Organizations this credential-less state is the recommende
 posture and is stronger than placing a password and MFA on the member root.
 **Centralized root access** is enabled, so any root action on a member account is
 brokered from the management account, whose own root is protected by MFA. The FSBP
-control IAM.6 (hardware MFA on root) reports "no data" because there are no member
-root credentials to evaluate, which is the correct outcome of this design.
+control IAM.6 (hardware MFA on root) returned "no data" at baseline, because there
+were no member root credentials to evaluate; in the after export it evaluates as
+passed, consistent with the credential-less design.
 
 ### Access review
 
