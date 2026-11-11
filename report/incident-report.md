@@ -66,12 +66,12 @@ All times are UTC on 2026-11-03.
 | 20:00:21 to 20:06:33 | Initial access | 3 successful `ConsoleLogin` events, MFA used on each | `operator` |
 | 20:15:05 | Privilege escalation | `AttachUserPolicy` of `AdministratorAccess` to `operator` | `AdminJITRole` session |
 | 20:15:16 | Containment (undo) | `DetachUserPolicy` of `AdministratorAccess` | `AdminJITRole` session |
+| 20:19:07 | Verification | `DetachUserPolicy` re-run to confirm `operator` clean | `AdminJITRole` session |
 | 20:23:05 | Persistence | `CreateAccessKey` on `operator` (key `AKIA...T3HC`) | `AdminJITRole` session |
 | 20:24:27 | Cleanup | `DeleteAccessKey` on `operator` | `AdminJITRole` session |
 | 20:27:27 | Persistence | `CreateAccessKey` on `operator` (key `AKIA...DS7I`) | `AdminJITRole` session |
 | 20:37:10 | Collection (data plane) | `GetObject` on `confidential/customer-records.txt` | `AdminJITRole` session |
 | 20:38:50 | Collection (control plane) | `PutBucketPolicy` on the data bucket | `AdminJITRole` session |
-| 20:19:07 | Verification | `DetachUserPolicy` re-run to confirm `operator` clean | `AdminJITRole` session |
 
 The exercise window runs from 19:23:33 to 20:38:50 UTC. Both test access keys were
 deleted and the administrative policy removed, so the account was returned to no

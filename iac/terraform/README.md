@@ -1,9 +1,12 @@
 # Infrastructure as code (Terraform)
 
-The lab environment as code: the KMS customer-managed key, the locked-down S3
-bucket, the VPC and S3 gateway endpoint, and the data-classification prefixes.
-Region is `eu-north-1`, the workload Region the account's AWS-managed region
-policy leaves open (`us-east-1` is global-services only there).
+The lab environment as code, across all of its phases: the KMS customer-managed
+keys, the locked-down S3 data bucket with its data-classification prefixes, the
+VPC and S3 gateway endpoint, the CloudTrail trail and its log bucket, the
+GuardDuty detector with SNS alerting, the AWS Config recorder, Security Hub (FSBP)
+and IAM Access Analyzer, and the account-wide security baseline. Region is
+`eu-north-1`, the workload Region the account's AWS-managed region policy leaves
+open (`us-east-1` is global-services only there).
 
 State is kept local for the lab and git-ignored; production would use an S3 remote
 backend with state locking.
@@ -13,10 +16,14 @@ backend with state locking.
 | File | What it creates |
 | --- | --- |
 | `providers.tf` | AWS provider, pinned, no profile (uses the short-lived credentials exported by `assume-role.sh`) |
-| `variables.tf` | Region, account, bucket name, key users, confidential reader, the `enforce_vpce` toggle |
-| `kms.tf` | Customer-managed key with rotation and a tight key policy, plus an alias |
-| `s3.tf` | The bucket with Block Public Access, ownership enforced, versioning, SSE-KMS, the bucket policy, and three seed objects pinned to the CMK |
+| `variables.tf` | Region, account, bucket name, key users, confidential reader, alert email, the `enforce_vpce` toggle |
+| `kms.tf` | Customer-managed key for the data bucket, with rotation and a tight key policy, plus an alias |
+| `s3.tf` | The data bucket with Block Public Access, ownership enforced, versioning, SSE-KMS, the bucket policy, and three seed objects pinned to the CMK |
 | `vpc.tf` | A VPC with no internet gateway and an S3 gateway endpoint |
+| `cloudtrail.tf` | The CloudTrail trail and its dedicated, locked-down log bucket (versioned, SSE-KMS, bucket policy) |
+| `guardduty.tf` | The GuardDuty detector and the SNS alert topic, email subscription, topic policy, and the EventBridge rule that routes findings to SNS |
+| `posture.tf` | The AWS Config recorder and delivery channel with its log bucket and the Config IAM role, Security Hub with the FSBP standard, and IAM Access Analyzer |
+| `remediation.tf` | The account-wide baseline: default EBS encryption, S3 and EBS public-access blocks, the account password policy, SSM document-sharing block, default security-group and subnet lockdown, S3 lifecycle rules, and the CloudTrail CMK |
 | `outputs.tf` | Bucket name and ARN, key ARN, VPC endpoint ID |
 
 ## Prerequisites
@@ -42,12 +49,15 @@ source ../../scripts/assume-role.sh <6-digit-MFA-code>              # Contributo
 source ../../scripts/assume-role.sh <6-digit-MFA-code> AdminJITRole # elevated
 ```
 
-`ContributorRole` uses `PowerUserAccess`, which covers KMS, S3 and VPC but not
-IAM, so nothing here creates IAM principals; classification is enforced entirely
-through the bucket policy. Applies that touch objects run as `AdminJITRole`,
-because the `confidential/` deny blocks any non-admin read, including Terraform's
-own refresh `HeadObject`. In production a dedicated deployment role admitted on
-every prefix would fill that seat.
+`ContributorRole` uses `PowerUserAccess`, which covers KMS, S3, VPC, CloudTrail,
+GuardDuty, Config and Security Hub but not IAM. The full configuration does create
+one IAM principal, the AWS Config service role in `posture.tf`, so a complete
+`terraform apply` runs as `AdminJITRole`. `AdminJITRole` is also needed for applies
+that touch objects, because the `confidential/` deny blocks any non-admin read,
+including Terraform's own refresh `HeadObject`. In production a dedicated
+deployment role, scoped to create the Config role and admitted on every prefix,
+would fill that seat; data classification itself is enforced through the bucket
+policy, not through the deployer's identity.
 
 ## Run
 
